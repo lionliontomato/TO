@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>番茄的金庫</title>
   <link rel="stylesheet" href="style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&family=Poppins:wght@400;700&family=Roboto:wght@400;700&family=Courier+Prime&display=swap" rel="stylesheet">
 </head>
 <body>
   <header>
@@ -14,13 +14,13 @@
   </header>
 
   <main>
-    <div class="headerRow">
-      <div>序號</div>
-      <div>存鑽老闆</div>
-      <div>存鑽數量</div>
-      <div>存歌數量</div>
-      <div>存爆數量</div>
-      <div>總數</div>
+    <div class="grid headerRow">
+      <div class="col indexCol">序號</div>
+      <div class="col ownerCol">存鑽老闆</div>
+      <div class="col diamondCol">存鑽數量</div>
+      <div class="col songCol">存歌數量</div>
+      <div class="col bombCol">存爆數量</div>
+      <div class="col totalCol">總數</div>
     </div>
     <div id="cardsContainer"></div>
   </main>
