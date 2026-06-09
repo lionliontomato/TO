@@ -228,6 +228,20 @@ button {
 }
 button:hover { transform: translateY(-2px); box-shadow: 0 16px 32px rgba(38, 130, 184, .28); }
 .result-text { margin: 10px 8px 0; color: var(--ink-soft); line-height: 1.6; }
+.sheet-actions {
+  margin: 8px 8px 0;
+  color: var(--ink-soft);
+  line-height: 1.6;
+  font-size: 15px;
+}
+.sheet-actions a {
+  color: #1f79b0;
+  font-weight: 900;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(31, 121, 176, .35);
+}
+.sheet-actions a:hover { border-bottom-color: rgba(31, 121, 176, .9); }
+
 
 .summary-grid {
   display: grid;
