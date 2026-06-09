@@ -5,13 +5,6 @@ let headers = ["存鑽老闆", "存鑽數量", "存歌數量", "存爆數量", "
 let records = [];
 
 const colors = ["col-name", "col-diamond", "col-song", "col-bomb", "col-total"];
-const metricBgs = {
-  "存鑽數量": "#e8f8ff",
-  "存歌數量": "#edf2ff",
-  "存爆數量": "#fff0f6",
-  "總數": "#fff7db"
-};
-
 const fmt = new Intl.NumberFormat("zh-Hant-TW");
 const $ = (selector) => document.querySelector(selector);
 
@@ -105,29 +98,6 @@ function renderTable(items) {
   `).join("");
 }
 
-function renderCards(items) {
-  const cardArea = $("#cards");
-  if (items.length === 0) {
-    cardArea.innerHTML = `<div class="empty-state">查無資料，請確認名字是否與試算表相同。</div>`;
-    return;
-  }
-
-  const limitedItems = items.length > 12 ? items.slice(0, 12) : items;
-  cardArea.innerHTML = limitedItems.map(item => `
-    <article class="person-card">
-      <div class="person-name"><span>${escapeHtml(item[headers[0]])}</span><span>☁️</span></div>
-      <div class="metric-grid">
-        ${headers.slice(1).map(h => `
-          <div class="metric ${h === '總數' ? 'total' : ''}" style="--metric-bg:${metricBgs[h] || '#edf9ff'}">
-            <strong>${escapeHtml(h)}</strong>
-            <span>${fmt.format(item[h])}</span>
-          </div>
-        `).join("")}
-      </div>
-    </article>
-  `).join("");
-}
-
 function updateResultText(items, keyword) {
   const resultText = $("#resultText");
   if (!resultText) return;
@@ -144,7 +114,6 @@ function filterRecords() {
     ? records
     : records.filter(item => normalize(item[headers[0]]).includes(key));
 
-  renderCards(items);
   renderTable(items);
   updateResultText(items, keyword);
 }
@@ -154,13 +123,11 @@ async function init() {
     $("#resultText").textContent = "資料載入中…";
     await loadSheetData();
     renderTable(records);
-    renderCards(records);
     updateResultText(records, "");
   } catch (error) {
     console.error(error);
     records = [];
     renderTable(records);
-    renderCards(records);
     $("#resultText").textContent = "資料載入失敗：請確認 Google 試算表已開放『知道連結的使用者可檢視』。";
   }
 
