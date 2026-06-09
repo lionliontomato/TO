@@ -23,15 +23,28 @@ function populateCards(data){
   data.forEach((row,idx)=>{
     const card=document.createElement("div");
     card.classList.add("card");
-    const fields=[idx+1,row[0],row[1],row[2],row[3],row[4]];
-    const classes=["indexCol","ownerCol","diamondCol","songCol","bombCol","totalCol"];
-    fields.forEach((text,i)=>{
-      const d=document.createElement("div");
-      d.classList.add("cell");
-      d.classList.add(classes[i]);
-      d.innerText=text;
-      card.appendChild(d);
-    });
+
+    // 序號
+    const idxDiv=document.createElement("div");
+    idxDiv.classList.add("indexNum");
+    idxDiv.innerText=idx+1;
+    card.appendChild(idxDiv);
+
+    // 欄位標題 + 數值
+    const labels=["存鑽老闆","存鑽數量","存歌數量","存爆數量","總數"];
+    const classes=["ownerCol","diamondCol","songCol","bombCol","totalCol"];
+    for(let i=0;i<5;i++){
+      const t=document.createElement("div");
+      t.classList.add("card-title");
+      t.innerText=labels[i];
+      card.appendChild(t);
+
+      const v=document.createElement("div");
+      v.classList.add(classes[i]);
+      v.innerText=row[i];
+      card.appendChild(v);
+    }
+
     cardsContainer.appendChild(card);
   });
 }
