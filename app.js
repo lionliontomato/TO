@@ -15,6 +15,7 @@ fetch(url)
     const jsonText = text.match(/google\.visualization\.Query\.setResponse\(([^)]+)\)/)[1];
     const data = JSON.parse(jsonText).table;
     processData(data);
+    createBubbles(30);
   });
 
 function processData(data) {
@@ -48,3 +49,19 @@ searchInput.addEventListener("input", () => {
   const filtered = allData.filter(row => row[0].toLowerCase().includes(query));
   populateCards(filtered);
 });
+
+// 漂浮氣泡效果
+function createBubbles(num) {
+  const container = document.getElementById("floatingBubbles");
+  for(let i=0;i<num;i++){
+    const bubble = document.createElement("div");
+    bubble.classList.add("bubble");
+    const size = Math.random() * 20 + 10;
+    bubble.style.width = size + "px";
+    bubble.style.height = size + "px";
+    bubble.style.left = Math.random() * 100 + "%";
+    bubble.style.animationDuration = (Math.random()*10 + 5) + "s";
+    bubble.style.backgroundColor = "rgba(255,255,255,0.5)";
+    container.appendChild(bubble);
+  }
+}
