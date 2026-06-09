@@ -1,5 +1,5 @@
 body {
-  font-family: Arial, sans-serif;
+  font-family: 'Noto Sans TC', 'Poppins', sans-serif;
   background: #E6F7FF;
   margin: 0;
   padding: 0;
@@ -14,6 +14,7 @@ header {
 header h1 {
   margin: 0;
   color: #003B73;
+  font-weight: 700;
 }
 
 header input {
@@ -24,21 +25,38 @@ header input {
   border: 1px solid #99D6FF;
 }
 
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  width: 90%;
+  margin: 20px auto 10px;
+  font-weight: 700;
+  background: #B3E5FF;
+  padding: 10px;
+  border-radius: 6px;
+}
+
+.headerRow div {
+  flex: 1;
+  text-align: center;
+}
+
 #cardsContainer {
   width: 90%;
-  margin: 20px auto;
+  margin: 0 auto 20px;
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 12px;
 }
 
 .card {
-  background: white;
+  background: linear-gradient(135deg, #ffffff, #d9f2ff);
   padding: 15px;
   border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   display: flex;
   justify-content: space-between;
+  font-size: 16px;
 }
 
 .card div {
@@ -46,7 +64,7 @@ header input {
   text-align: center;
 }
 
-.card-header {
-  font-weight: bold;
+.card .index {
+  font-weight: 700;
   color: #003B73;
 }

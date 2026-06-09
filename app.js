@@ -19,19 +19,22 @@ fetch(url)
 
 function processData(data) {
   // 只取 A~E 欄 (0~4)
-  const cols = data.cols.slice(0,5).map(c => c.label);
   allData = data.rows.map(r => r.c.slice(0,5).map(c => (c ? c.v : "")));
   populateCards(allData);
 }
 
 function populateCards(data) {
   cardsContainer.innerHTML = "";
-  data.forEach(row => {
+  data.forEach((row, idx) => {
     const card = document.createElement("div");
     card.classList.add("card");
-    row.forEach((cell, idx) => {
+    const indexDiv = document.createElement("div");
+    indexDiv.classList.add("index");
+    indexDiv.innerText = idx + 1;
+    card.appendChild(indexDiv);
+
+    row.forEach(cell => {
       const div = document.createElement("div");
-      if(idx === 0) div.classList.add("card-header");
       div.innerText = cell;
       card.appendChild(div);
     });
