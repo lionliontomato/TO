@@ -1,20 +1,20 @@
 body {
   font-family: 'Noto Sans TC', sans-serif;
-  background: linear-gradient(135deg,#90dfff,#e6f7ff);
+  background: linear-gradient(135deg,#3b7bd3,#00d2ff);
   margin:0;
   padding:0;
   overflow-x:hidden;
 }
 
 header {
-  background:#7AD1FF;
+  background:#4fc3f7;
   padding:20px;
   text-align:center;
 }
 
 header h1 {
   margin:0;
-  color:#003B73;
+  color:#ffd700;
   font-weight:900;
   text-shadow:2px 2px 5px #00000050;
 }
@@ -32,13 +32,13 @@ header input {
 .card {
   width: 90%;
   margin: 15px auto;
-  background: linear-gradient(135deg,#ffffff,#d9f2ff);
+  background: linear-gradient(135deg,#ffffff,#d1e8ff);
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.2);
   padding: 15px;
   display: grid;
   grid-template-columns: repeat(1,1fr);
-  gap:6px;
+  gap:4px;
 }
 
 .card-title {
@@ -49,17 +49,17 @@ header input {
 
 .indexNum {
   font-weight:900;
-  font-size:1.1em;
-  color:#003B73;
+  font-size:1.2em;
+  color:#ffd700;
   text-align:center;
-  margin-bottom:4px;
+  margin-bottom:6px;
 }
 
-.ownerCol { font-family:'Poppins',sans-serif; color:#8e44ad; font-weight:700; font-size:1.1em; }
-.diamondCol { font-family:'Roboto',sans-serif; color:#3498db; font-weight:700; }
-.songCol { font-family:'Poppins',sans-serif; color:#e91e63; font-weight:700; }
-.bombCol { font-family:'Roboto',sans-serif; color:#f44336; font-weight:700; }
-.totalCol { font-family:'Poppins',sans-serif; color:#ffa500; font-weight:900; }
+.ownerCol { font-family:'Poppins',sans-serif; color:#6a1b9a; font-weight:900; font-size:1.1em; }
+.diamondCol { font-family:'Roboto',sans-serif; color:#3498db; font-weight:900; }
+.songCol { font-family:'Poppins',sans-serif; color:#f57c00; font-weight:900; }
+.bombCol { font-family:'Roboto',sans-serif; color:#d32f2f; font-weight:900; }
+.totalCol { font-family:'Poppins',sans-serif; color:#fbc02d; font-weight:900; }
 
 #floatingBubbles {
   position:fixed;
@@ -72,7 +72,7 @@ header input {
 .bubble {
   position:absolute;
   border-radius:50%;
-  opacity:0.35;
+  opacity:0.4;
   animation: floatUp linear infinite;
 }
 

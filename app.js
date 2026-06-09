@@ -24,13 +24,11 @@ function populateCards(data){
     const card=document.createElement("div");
     card.classList.add("card");
 
-    // 序號
     const idxDiv=document.createElement("div");
     idxDiv.classList.add("indexNum");
     idxDiv.innerText=idx+1;
     card.appendChild(idxDiv);
 
-    // 欄位標題 + 數值
     const labels=["存鑽老闆","存鑽數量","存歌數量","存爆數量","總數"];
     const classes=["ownerCol","diamondCol","songCol","bombCol","totalCol"];
     for(let i=0;i<5;i++){
