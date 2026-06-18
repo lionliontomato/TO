@@ -12,11 +12,19 @@ function normalize(text) {
   return String(text ?? "").trim().toLowerCase();
 }
 
+// 數字會轉成數字；不是數字的內容會保留原文字，例如 ♾️、∞、無上限、VIP
 function toNumber(value) {
   const cleaned = String(value ?? "").replace(/,/g, "").trim();
+
   if (cleaned === "") return 0;
+
   const number = Number(cleaned);
-  return Number.isFinite(number) ? number : 0;
+
+  if (Number.isFinite(number)) {
+    return number;
+  }
+
+  return cleaned;
 }
 
 function escapeHtml(value) {
@@ -43,7 +51,7 @@ function parseCSV(text) {
       i++;
     } else if (char === '"') {
       inQuotes = !inQuotes;
-    } else if (char === ',' && !inQuotes) {
+    } else if (char === "," && !inQuotes) {
       row.push(cell);
       cell = "";
     } else if ((char === "\n" || char === "\r") && !inQuotes) {
@@ -79,7 +87,9 @@ async function loadSheetData() {
     .map(row => {
       const item = {};
       headers.forEach((header, index) => {
-        item[header] = index === 0 ? String(row[index] ?? "").trim() : toNumber(row[index]);
+        item[header] = index === 0
+          ? String(row[index] ?? "").trim()
+          : toNumber(row[index]);
       });
       return item;
     })
@@ -87,12 +97,18 @@ async function loadSheetData() {
 }
 
 function renderTable(items) {
-  $("#tableHead").innerHTML = `<tr>${headers.map((h, index) => `<th class="${colors[index] || ''}">${escapeHtml(h)}</th>`).join("")}</tr>`;
+  $("#tableHead").innerHTML = `<tr>${headers.map((h, index) => `<th class="${colors[index] || ""}">${escapeHtml(h)}</th>`).join("")}</tr>`;
+
   $("#tableBody").innerHTML = items.map(item => `
     <tr>
       ${headers.map((h, index) => {
-        const value = index === 0 ? escapeHtml(item[h]) : fmt.format(item[h]);
-        return `<td class="${index === 0 ? 'name-cell' : ''}">${value}</td>`;
+        const value = index === 0
+          ? escapeHtml(item[h])
+          : typeof item[h] === "number"
+            ? fmt.format(item[h])
+            : escapeHtml(item[h]);
+
+        return `<td class="${index === 0 ? "name-cell" : ""}">${value}</td>`;
       }).join("")}
     </tr>
   `).join("");
