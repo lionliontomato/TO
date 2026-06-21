@@ -32,10 +32,6 @@ body {
   isolation: isolate;
   overflow-x: hidden;
 
-  /*
-    背景圖版本：
-    請把圖片放在 assets/bg-conan-kid.png
-  */
   background:
     linear-gradient(
       rgba(255, 255, 255, 0.34),
@@ -43,7 +39,7 @@ body {
     ),
     radial-gradient(circle at 18% 10%, rgba(255,255,255,0.95), rgba(255,255,255,0) 24%),
     radial-gradient(circle at 80% 3%, rgba(255,255,255,0.72), rgba(255,255,255,0) 27%),
-    url("assets/bg-conan-kid.png"),
+    url("bg-conan-kid.png"),
     linear-gradient(160deg, #ecf9ff 0%, #bfe7fb 42%, #eaf8ff 100%);
 
   background-size:
@@ -503,7 +499,7 @@ footer {
       ),
       radial-gradient(circle at 18% 10%, rgba(255,255,255,0.95), rgba(255,255,255,0) 24%),
       radial-gradient(circle at 80% 3%, rgba(255,255,255,0.72), rgba(255,255,255,0) 27%),
-      url("assets/bg-conan-kid.png"),
+      url("bg-conan-kid.png"),
       linear-gradient(160deg, #ecf9ff 0%, #bfe7fb 42%, #eaf8ff 100%);
 
     background-size:
