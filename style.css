@@ -13,30 +13,69 @@
   --radius: 28px;
 }
 
-* { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  min-height: 100%;
+  background: #e6f6ff;
+}
+
 body {
   margin: 0;
   min-height: 100vh;
   color: var(--ink);
   font-family: "Noto Serif TC", "DFKai-SB", "KaiTi", serif;
+  position: relative;
+  isolation: isolate;
+  overflow-x: hidden;
+
+  /*
+    背景圖版本：
+    請把圖片放在 assets/bg-conan-kid.png
+  */
   background:
+    linear-gradient(
+      rgba(255, 255, 255, 0.34),
+      rgba(255, 255, 255, 0.58)
+    ),
     radial-gradient(circle at 18% 10%, rgba(255,255,255,0.95), rgba(255,255,255,0) 24%),
     radial-gradient(circle at 80% 3%, rgba(255,255,255,0.72), rgba(255,255,255,0) 27%),
+    url("assets/bg-conan-kid.png"),
     linear-gradient(160deg, #ecf9ff 0%, #bfe7fb 42%, #eaf8ff 100%);
-  overflow-x: hidden;
+
+  background-size:
+    cover,
+    cover,
+    cover,
+    cover,
+    cover;
+
+  background-position:
+    center,
+    center,
+    center,
+    center top,
+    center;
+
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 }
 
+/* 淡淡格線，保留原本天空感，但降低存在感 */
 body::before {
   content: "";
   position: fixed;
   inset: 0;
+  z-index: 0;
   pointer-events: none;
   background-image:
-    linear-gradient(rgba(45, 111, 150, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(45, 111, 150, 0.035) 1px, transparent 1px);
+    linear-gradient(rgba(45, 111, 150, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(45, 111, 150, 0.025) 1px, transparent 1px);
   background-size: 44px 44px;
-  mask-image: linear-gradient(to bottom, rgba(0,0,0,0.55), transparent 78%);
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,0.38), transparent 78%);
 }
 
 .sky-glow {
@@ -49,6 +88,7 @@ body::before {
   background: rgba(255, 255, 255, 0.58);
   filter: blur(4px);
   pointer-events: none;
+  z-index: 0;
 }
 
 .mist {
@@ -61,13 +101,28 @@ body::before {
   filter: blur(10px);
   opacity: .55;
   animation: drift 18s ease-in-out infinite alternate;
+  z-index: 0;
 }
-.mist-a { top: 220px; background: radial-gradient(ellipse, rgba(255,255,255,.75), transparent 68%); }
-.mist-b { bottom: 60px; background: radial-gradient(ellipse, rgba(189,232,255,.65), transparent 70%); animation-duration: 24s; }
+
+.mist-a {
+  top: 220px;
+  background: radial-gradient(ellipse, rgba(255,255,255,.75), transparent 68%);
+}
+
+.mist-b {
+  bottom: 60px;
+  background: radial-gradient(ellipse, rgba(189,232,255,.65), transparent 70%);
+  animation-duration: 24s;
+}
 
 @keyframes drift {
-  from { transform: translateX(-3%) translateY(0); }
-  to { transform: translateX(5%) translateY(-18px); }
+  from {
+    transform: translateX(-3%) translateY(0);
+  }
+
+  to {
+    transform: translateX(5%) translateY(-18px);
+  }
 }
 
 .floating-icons {
@@ -77,20 +132,35 @@ body::before {
   overflow: hidden;
   z-index: 1;
 }
+
 .floating-icons span {
   position: absolute;
   left: var(--x);
   bottom: -80px;
   font-size: clamp(22px, 3vw, 42px);
-  opacity: .38;
+  opacity: .32;
   animation: floatUp var(--duration) linear infinite;
   animation-delay: var(--delay);
 }
+
 @keyframes floatUp {
-  0% { transform: translateY(0) rotate(0deg); opacity: 0; }
-  12% { opacity: .38; }
-  70% { opacity: .34; }
-  100% { transform: translateY(-115vh) rotate(28deg); opacity: 0; }
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0;
+  }
+
+  12% {
+    opacity: .32;
+  }
+
+  70% {
+    opacity: .28;
+  }
+
+  100% {
+    transform: translateY(-115vh) rotate(28deg);
+    opacity: 0;
+  }
 }
 
 .page-shell {
@@ -117,6 +187,7 @@ body::before {
   text-align: center;
   border-bottom: 1px solid rgba(38, 123, 177, .13);
 }
+
 .hero::before,
 .hero::after {
   content: "";
@@ -126,6 +197,7 @@ body::before {
   border-radius: 24px;
   pointer-events: none;
 }
+
 .hero::after {
   inset: 38px;
   border-style: dashed;
@@ -156,19 +228,26 @@ body::before {
   font-weight: 700;
 }
 
-h1, h2 {
+h1,
+h2 {
   margin: 0;
   font-family: "Ma Shan Zheng", "Noto Serif TC", "DFKai-SB", serif;
   letter-spacing: .05em;
   font-weight: 400;
 }
+
 h1 {
   font-size: clamp(54px, 10vw, 112px);
   line-height: .95;
   color: #266a9d;
   text-shadow: 0 8px 26px rgba(77, 159, 210, .21);
 }
-h2 { font-size: clamp(32px, 4vw, 52px); color: #2d719d; }
+
+h2 {
+  font-size: clamp(32px, 4vw, 52px);
+  color: #2d719d;
+}
+
 .subtitle {
   margin: 20px auto 0;
   max-width: 680px;
@@ -187,17 +266,20 @@ h2 { font-size: clamp(32px, 4vw, 52px); color: #2d719d; }
   box-shadow: 0 15px 40px rgba(49, 136, 185, .12);
   text-align: left;
 }
+
 .search-card label {
   display: block;
   margin: 0 0 8px 8px;
   font-weight: 900;
   color: #2e668d;
 }
+
 .search-row {
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 10px;
 }
+
 input[type="search"] {
   width: 100%;
   border: 1px solid rgba(65, 145, 190, .28);
@@ -210,10 +292,12 @@ input[type="search"] {
   outline: none;
   transition: .2s ease;
 }
+
 input[type="search"]:focus {
   border-color: rgba(33, 132, 193, .72);
   box-shadow: 0 0 0 4px rgba(96, 184, 235, .20);
 }
+
 button {
   border: 0;
   border-radius: 18px;
@@ -226,22 +310,35 @@ button {
   box-shadow: 0 12px 26px rgba(38, 130, 184, .22);
   transition: transform .2s ease, box-shadow .2s ease;
 }
-button:hover { transform: translateY(-2px); box-shadow: 0 16px 32px rgba(38, 130, 184, .28); }
-.result-text { margin: 10px 8px 0; color: var(--ink-soft); line-height: 1.6; }
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 32px rgba(38, 130, 184, .28);
+}
+
+.result-text {
+  margin: 10px 8px 0;
+  color: var(--ink-soft);
+  line-height: 1.6;
+}
+
 .sheet-actions {
   margin: 8px 8px 0;
   color: var(--ink-soft);
   line-height: 1.6;
   font-size: 15px;
 }
+
 .sheet-actions a {
   color: #1f79b0;
   font-weight: 900;
   text-decoration: none;
   border-bottom: 1px solid rgba(31, 121, 176, .35);
 }
-.sheet-actions a:hover { border-bottom-color: rgba(31, 121, 176, .9); }
 
+.sheet-actions a:hover {
+  border-bottom-color: rgba(31, 121, 176, .9);
+}
 
 .summary-grid {
   display: grid;
@@ -249,6 +346,7 @@ button:hover { transform: translateY(-2px); box-shadow: 0 16px 32px rgba(38, 130
   gap: 14px;
   margin: 18px 0;
 }
+
 .summary-card {
   position: relative;
   overflow: hidden;
@@ -258,6 +356,7 @@ button:hover { transform: translateY(-2px); box-shadow: 0 16px 32px rgba(38, 130
   border: 1px solid rgba(255,255,255,.9);
   box-shadow: 0 16px 46px rgba(61, 137, 180, .13);
 }
+
 .summary-card::after {
   content: "";
   position: absolute;
@@ -269,10 +368,24 @@ button:hover { transform: translateY(-2px); box-shadow: 0 16px 32px rgba(38, 130
   border-radius: 50%;
   opacity: .38;
 }
-.summary-card .label { color: var(--ink-soft); font-size: 13px; font-weight: 900; }
-.summary-card .value { margin-top: 6px; font-size: clamp(24px, 3vw, 34px); font-weight: 900; color: #225e8e; }
 
-.content-panel { padding: clamp(20px, 4vw, 34px); }
+.summary-card .label {
+  color: var(--ink-soft);
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.summary-card .value {
+  margin-top: 6px;
+  font-size: clamp(24px, 3vw, 34px);
+  font-weight: 900;
+  color: #225e8e;
+}
+
+.content-panel {
+  padding: clamp(20px, 4vw, 34px);
+}
+
 .section-head {
   display: flex;
   align-items: end;
@@ -280,7 +393,11 @@ button:hover { transform: translateY(-2px); box-shadow: 0 16px 32px rgba(38, 130
   gap: 20px;
   margin-bottom: 20px;
 }
-.source-note { color: var(--ink-soft); margin: 0; }
+
+.source-note {
+  color: var(--ink-soft);
+  margin: 0;
+}
 
 .table-wrap {
   overflow-x: auto;
@@ -288,16 +405,20 @@ button:hover { transform: translateY(-2px); box-shadow: 0 16px 32px rgba(38, 130
   border: 1px solid var(--line);
   background: rgba(255,255,255,.58);
 }
+
 table {
   width: 100%;
   border-collapse: collapse;
   min-width: 760px;
 }
-th, td {
+
+th,
+td {
   padding: 16px 14px;
   text-align: center;
   border-bottom: 1px solid rgba(72, 139, 180, .13);
 }
+
 th {
   font-size: 15px;
   letter-spacing: .08em;
@@ -305,16 +426,41 @@ th {
   font-weight: 900;
   white-space: nowrap;
 }
-td { font-size: 17px; color: #2d4d65; }
-tbody tr:hover { background: rgba(231, 248, 255, .58); }
 
-.col-name { background: linear-gradient(135deg, #5ab7e5, #79cff5); }
-.col-diamond { background: linear-gradient(135deg, #64c6d7, #a1e9f0); }
-.col-song { background: linear-gradient(135deg, #8db7f1, #bfd8ff); }
-.col-bomb { background: linear-gradient(135deg, #eeb6ca, #ffd6e3); }
-.col-total { background: linear-gradient(135deg, #e1bd6d, #ffe4a3); }
+td {
+  font-size: 17px;
+  color: #2d4d65;
+}
 
-.name-cell { font-weight: 900; color: #205b84; }
+tbody tr:hover {
+  background: rgba(231, 248, 255, .58);
+}
+
+.col-name {
+  background: linear-gradient(135deg, #5ab7e5, #79cff5);
+}
+
+.col-diamond {
+  background: linear-gradient(135deg, #64c6d7, #a1e9f0);
+}
+
+.col-song {
+  background: linear-gradient(135deg, #8db7f1, #bfd8ff);
+}
+
+.col-bomb {
+  background: linear-gradient(135deg, #eeb6ca, #ffd6e3);
+}
+
+.col-total {
+  background: linear-gradient(135deg, #e1bd6d, #ffe4a3);
+}
+
+.name-cell {
+  font-weight: 900;
+  color: #205b84;
+}
+
 .empty-state {
   grid-column: 1 / -1;
   text-align: center;
@@ -335,17 +481,80 @@ footer {
   font-size: 14px;
 }
 
+/* 平板版 */
 @media (max-width: 920px) {
-  .summary-grid { grid-template-columns: repeat(2, 1fr); }
-  .section-head { align-items: flex-start; flex-direction: column; }
-}
-@media (max-width: 640px) {
-  .page-shell { width: min(100% - 20px, 1160px); padding-top: 18px; }
-  .hero { padding: 28px 18px; }
-  .search-row { grid-template-columns: 1fr; }
-  button { min-height: 52px; }
-  .summary-grid { grid-template-columns: 1fr; }
-  th, td { padding: 13px 10px; }
+  .summary-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .section-head {
+    align-items: flex-start;
+    flex-direction: column;
+  }
 }
 
-/* 增加更多漂浮圖示效果 */
+/* 手機版 */
+@media (max-width: 640px) {
+  body {
+    background:
+      linear-gradient(
+        rgba(255, 255, 255, 0.62),
+        rgba(255, 255, 255, 0.78)
+      ),
+      radial-gradient(circle at 18% 10%, rgba(255,255,255,0.95), rgba(255,255,255,0) 24%),
+      radial-gradient(circle at 80% 3%, rgba(255,255,255,0.72), rgba(255,255,255,0) 27%),
+      url("assets/bg-conan-kid.png"),
+      linear-gradient(160deg, #ecf9ff 0%, #bfe7fb 42%, #eaf8ff 100%);
+
+    background-size:
+      cover,
+      cover,
+      cover,
+      auto 100%,
+      cover;
+
+    background-position:
+      center,
+      center,
+      center,
+      center top,
+      center;
+
+    background-repeat: no-repeat;
+    background-attachment: scroll;
+  }
+
+  body::before {
+    opacity: .45;
+  }
+
+  .floating-icons span {
+    opacity: .24;
+  }
+
+  .page-shell {
+    width: min(100% - 20px, 1160px);
+    padding-top: 18px;
+  }
+
+  .hero {
+    padding: 28px 18px;
+  }
+
+  .search-row {
+    grid-template-columns: 1fr;
+  }
+
+  button {
+    min-height: 52px;
+  }
+
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  th,
+  td {
+    padding: 13px 10px;
+  }
+}
