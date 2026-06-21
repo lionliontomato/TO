@@ -115,6 +115,7 @@ body::before {
   from {
     transform: translateX(-3%) translateY(0);
   }
+
   to {
     transform: translateX(5%) translateY(-18px);
   }
@@ -143,12 +144,15 @@ body::before {
     transform: translateY(0) rotate(0deg);
     opacity: 0;
   }
+
   12% {
     opacity: .32;
   }
+
   70% {
     opacity: .28;
   }
+
   100% {
     transform: translateY(-115vh) rotate(28deg);
     opacity: 0;
@@ -178,9 +182,10 @@ body::before {
   background-position: left bottom;
 }
 
-/* 右邊怪盜基德 */
+/* 右邊怪盜基德：加寬顯示框，讓人物更完整 */
 .edge-right {
-  right: 4px;
+  right: -14px;
+  width: 248px;
   background-position: right bottom;
 }
 
@@ -511,6 +516,11 @@ footer {
     background-size: 980px auto;
     opacity: 0.95;
   }
+
+  .edge-right {
+    right: -10px;
+    width: 200px;
+  }
 }
 
 @media (max-width: 920px) {
@@ -539,7 +549,8 @@ footer {
   }
 
   .edge-right {
-    right: -4px;
+    right: -8px;
+    width: 138px;
   }
 }
 
