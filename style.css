@@ -42,20 +42,8 @@ body {
     url("bg-conan-kid.png"),
     linear-gradient(160deg, #ecf9ff 0%, #bfe7fb 42%, #eaf8ff 100%);
 
-  background-size:
-    cover,
-    cover,
-    cover,
-    100% auto,
-    cover;
-
-  background-position:
-    center,
-    center,
-    center,
-    center top,
-    center;
-
+  background-size: cover, cover, cover, 100% auto, cover;
+  background-position: center, center, center, center top, center;
   background-repeat: no-repeat;
   background-attachment: fixed;
 }
@@ -115,6 +103,7 @@ body::before {
   from {
     transform: translateX(-3%) translateY(0);
   }
+
   to {
     transform: translateX(5%) translateY(-18px);
   }
@@ -143,12 +132,15 @@ body::before {
     transform: translateY(0) rotate(0deg);
     opacity: 0;
   }
+
   12% {
     opacity: .32;
   }
+
   70% {
     opacity: .28;
   }
+
   100% {
     transform: translateY(-115vh) rotate(28deg);
     opacity: 0;
@@ -163,11 +155,9 @@ body::before {
   height: 390px;
   pointer-events: none;
   z-index: 4;
-
   background-image: url("bg-conan-kid.png");
   background-repeat: no-repeat;
   background-size: 1200px auto;
-
   opacity: 0.98;
   filter: drop-shadow(0 12px 22px rgba(44, 109, 157, 0.18));
 }
@@ -524,7 +514,7 @@ footer {
   }
 }
 
-/* 手機版 */
+/* 小平板版 */
 @media (max-width: 768px) {
   .edge-figure {
     width: 120px;
@@ -543,32 +533,20 @@ footer {
   }
 }
 
+/* 手機版：重點修正手機圖片跑版 */
 @media (max-width: 640px) {
   body {
     background:
       linear-gradient(
-        rgba(255, 255, 255, 0.62),
-        rgba(255, 255, 255, 0.78)
+        rgba(255, 255, 255, 0.72),
+        rgba(255, 255, 255, 0.86)
       ),
       radial-gradient(circle at 18% 10%, rgba(255,255,255,0.95), rgba(255,255,255,0) 24%),
       radial-gradient(circle at 80% 3%, rgba(255,255,255,0.72), rgba(255,255,255,0) 27%),
-      url("bg-conan-kid.png"),
       linear-gradient(160deg, #ecf9ff 0%, #bfe7fb 42%, #eaf8ff 100%);
 
-    background-size:
-      cover,
-      cover,
-      cover,
-      140% auto,
-      cover;
-
-    background-position:
-      center,
-      center,
-      center,
-      center top,
-      center;
-
+    background-size: cover;
+    background-position: center;
     background-repeat: no-repeat;
     background-attachment: scroll;
   }
@@ -588,6 +566,7 @@ footer {
 
   .hero {
     padding: 28px 18px;
+    min-height: 350px;
   }
 
   .search-row {
@@ -605,5 +584,73 @@ footer {
   th,
   td {
     padding: 13px 10px;
+  }
+
+  .edge-figure {
+    width: 88px;
+    height: 180px;
+    bottom: 8px;
+    background-size: 560px auto;
+    opacity: 0.32;
+    z-index: 1;
+    filter: drop-shadow(0 8px 14px rgba(44, 109, 157, 0.14));
+  }
+
+  .edge-left {
+    left: -8px;
+    background-position: left bottom;
+  }
+
+  .edge-right {
+    right: -8px;
+    background-position: right bottom;
+  }
+
+  .page-shell,
+  footer {
+    position: relative;
+    z-index: 2;
+  }
+}
+
+/* 更窄的手機 */
+@media (max-width: 430px) {
+  h1 {
+    font-size: clamp(46px, 14vw, 66px);
+  }
+
+  h2 {
+    font-size: clamp(28px, 9vw, 40px);
+  }
+
+  .subtitle {
+    font-size: 16px;
+  }
+
+  .hero {
+    min-height: 330px;
+  }
+
+  .edge-figure {
+    width: 72px;
+    height: 150px;
+    bottom: 4px;
+    background-size: 470px auto;
+    opacity: 0.26;
+  }
+
+  .edge-left {
+    left: -10px;
+  }
+
+  .edge-right {
+    right: -10px;
+  }
+}
+
+/* 超小螢幕：直接隱藏左右人物，避免手機畫面亂掉 */
+@media (max-width: 360px) {
+  .edge-figure {
+    display: none;
   }
 }
