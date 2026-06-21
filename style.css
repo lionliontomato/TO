@@ -34,18 +34,16 @@ body {
 
   background:
     linear-gradient(
-      rgba(255, 255, 255, 0.34),
-      rgba(255, 255, 255, 0.58)
+      rgba(255, 255, 255, 0.20),
+      rgba(255, 255, 255, 0.38)
     ),
-    radial-gradient(circle at 18% 10%, rgba(255,255,255,0.95), rgba(255,255,255,0) 24%),
-    radial-gradient(circle at 80% 3%, rgba(255,255,255,0.72), rgba(255,255,255,0) 27%),
-    url("bg-conan-kid.png"),
+    url("bg-desktop-conan-kid.png"),
     linear-gradient(160deg, #ecf9ff 0%, #bfe7fb 42%, #eaf8ff 100%);
 
-  background-size: cover, cover, cover, 100% auto, cover;
-  background-position: center, center, center, center top, center;
+  background-size: cover, cover, cover;
+  background-position: center center, center center, center center;
   background-repeat: no-repeat;
-  background-attachment: fixed;
+  background-attachment: fixed, fixed, fixed;
 }
 
 /* 淡淡格線 */
@@ -56,10 +54,10 @@ body::before {
   z-index: 0;
   pointer-events: none;
   background-image:
-    linear-gradient(rgba(45, 111, 150, 0.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(45, 111, 150, 0.025) 1px, transparent 1px);
+    linear-gradient(rgba(45, 111, 150, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(45, 111, 150, 0.018) 1px, transparent 1px);
   background-size: 44px 44px;
-  mask-image: linear-gradient(to bottom, rgba(0,0,0,0.38), transparent 78%);
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,0.28), transparent 78%);
 }
 
 .sky-glow {
@@ -69,7 +67,7 @@ body::before {
   left: -18vw;
   top: -20vw;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.58);
+  background: rgba(255, 255, 255, 0.38);
   filter: blur(4px);
   pointer-events: none;
   z-index: 0;
@@ -83,19 +81,19 @@ body::before {
   border-radius: 50%;
   pointer-events: none;
   filter: blur(10px);
-  opacity: .55;
+  opacity: .45;
   animation: drift 18s ease-in-out infinite alternate;
   z-index: 0;
 }
 
 .mist-a {
   top: 220px;
-  background: radial-gradient(ellipse, rgba(255,255,255,.75), transparent 68%);
+  background: radial-gradient(ellipse, rgba(255,255,255,.55), transparent 68%);
 }
 
 .mist-b {
   bottom: 60px;
-  background: radial-gradient(ellipse, rgba(189,232,255,.65), transparent 70%);
+  background: radial-gradient(ellipse, rgba(189,232,255,.45), transparent 70%);
   animation-duration: 24s;
 }
 
@@ -122,7 +120,7 @@ body::before {
   left: var(--x);
   bottom: -80px;
   font-size: clamp(22px, 3vw, 42px);
-  opacity: .32;
+  opacity: .22;
   animation: floatUp var(--duration) linear infinite;
   animation-delay: var(--delay);
 }
@@ -134,11 +132,11 @@ body::before {
   }
 
   12% {
-    opacity: .32;
+    opacity: .22;
   }
 
   70% {
-    opacity: .28;
+    opacity: .18;
   }
 
   100% {
@@ -147,31 +145,9 @@ body::before {
   }
 }
 
-/* ===== 左右人物前景圖層 ===== */
+/* 新背景圖已經有人物，隱藏舊的左右人物前景圖層，避免重複 */
 .edge-figure {
-  position: fixed;
-  bottom: 42px;
-  width: 210px;
-  height: 390px;
-  pointer-events: none;
-  z-index: 4;
-  background-image: url("bg-conan-kid.png");
-  background-repeat: no-repeat;
-  background-size: 1200px auto;
-  opacity: 0.98;
-  filter: drop-shadow(0 12px 22px rgba(44, 109, 157, 0.18));
-}
-
-/* 左邊柯南 */
-.edge-left {
-  left: 4px;
-  background-position: left bottom;
-}
-
-/* 右邊怪盜基德 */
-.edge-right {
-  right: 4px;
-  background-position: right bottom;
+  display: none;
 }
 
 .page-shell {
@@ -494,12 +470,8 @@ footer {
 
 /* 平板版 */
 @media (max-width: 1100px) {
-  .edge-figure {
-    width: 170px;
-    height: 330px;
-    bottom: 34px;
-    background-size: 980px auto;
-    opacity: 0.95;
+  .page-shell {
+    width: min(1080px, calc(100% - 28px));
   }
 }
 
@@ -514,49 +486,29 @@ footer {
   }
 }
 
-/* 小平板版 */
-@media (max-width: 768px) {
-  .edge-figure {
-    width: 120px;
-    height: 240px;
-    bottom: 24px;
-    background-size: 760px auto;
-    opacity: 0.90;
-  }
-
-  .edge-left {
-    left: -4px;
-  }
-
-  .edge-right {
-    right: -4px;
-  }
-}
-
-/* 手機版：重點修正手機圖片跑版 */
+/* 手機版 */
 @media (max-width: 640px) {
   body {
     background:
       linear-gradient(
-        rgba(255, 255, 255, 0.72),
-        rgba(255, 255, 255, 0.86)
+        rgba(255, 255, 255, 0.30),
+        rgba(255, 255, 255, 0.48)
       ),
-      radial-gradient(circle at 18% 10%, rgba(255,255,255,0.95), rgba(255,255,255,0) 24%),
-      radial-gradient(circle at 80% 3%, rgba(255,255,255,0.72), rgba(255,255,255,0) 27%),
+      url("bg-mobile-conan-kid.png"),
       linear-gradient(160deg, #ecf9ff 0%, #bfe7fb 42%, #eaf8ff 100%);
 
-    background-size: cover;
-    background-position: center;
+    background-size: cover, cover, cover;
+    background-position: center top, center top, center top;
     background-repeat: no-repeat;
-    background-attachment: scroll;
+    background-attachment: scroll, scroll, scroll;
   }
 
   body::before {
-    opacity: .45;
+    opacity: .35;
   }
 
   .floating-icons span {
-    opacity: .24;
+    opacity: .18;
   }
 
   .page-shell {
@@ -586,26 +538,6 @@ footer {
     padding: 13px 10px;
   }
 
-  .edge-figure {
-    width: 88px;
-    height: 180px;
-    bottom: 8px;
-    background-size: 560px auto;
-    opacity: 0.32;
-    z-index: 1;
-    filter: drop-shadow(0 8px 14px rgba(44, 109, 157, 0.14));
-  }
-
-  .edge-left {
-    left: -8px;
-    background-position: left bottom;
-  }
-
-  .edge-right {
-    right: -8px;
-    background-position: right bottom;
-  }
-
   .page-shell,
   footer {
     position: relative;
@@ -629,28 +561,5 @@ footer {
 
   .hero {
     min-height: 330px;
-  }
-
-  .edge-figure {
-    width: 72px;
-    height: 150px;
-    bottom: 4px;
-    background-size: 470px auto;
-    opacity: 0.26;
-  }
-
-  .edge-left {
-    left: -10px;
-  }
-
-  .edge-right {
-    right: -10px;
-  }
-}
-
-/* 超小螢幕：直接隱藏左右人物，避免手機畫面亂掉 */
-@media (max-width: 360px) {
-  .edge-figure {
-    display: none;
   }
 }
