@@ -42,16 +42,11 @@ body {
     url("bg-conan-kid.png"),
     linear-gradient(160deg, #ecf9ff 0%, #bfe7fb 42%, #eaf8ff 100%);
 
-  /*
-    第四個 86% auto 是背景人物圖的大小
-    數字越小，左右人物越完整，但圖會更往中間縮
-    建議範圍：82%～90%
-  */
   background-size:
     cover,
     cover,
     cover,
-    86% auto,
+    100% auto,
     cover;
 
   background-position:
@@ -65,7 +60,7 @@ body {
   background-attachment: fixed;
 }
 
-/* 淡淡格線，保留原本天空感 */
+/* 淡淡格線 */
 body::before {
   content: "";
   position: fixed;
@@ -120,7 +115,6 @@ body::before {
   from {
     transform: translateX(-3%) translateY(0);
   }
-
   to {
     transform: translateX(5%) translateY(-18px);
   }
@@ -149,19 +143,45 @@ body::before {
     transform: translateY(0) rotate(0deg);
     opacity: 0;
   }
-
   12% {
     opacity: .32;
   }
-
   70% {
     opacity: .28;
   }
-
   100% {
     transform: translateY(-115vh) rotate(28deg);
     opacity: 0;
   }
+}
+
+/* ===== 左右人物前景圖層 ===== */
+.edge-figure {
+  position: fixed;
+  bottom: 42px;
+  width: 210px;
+  height: 390px;
+  pointer-events: none;
+  z-index: 4;
+
+  background-image: url("bg-conan-kid.png");
+  background-repeat: no-repeat;
+  background-size: 1200px auto;
+
+  opacity: 0.98;
+  filter: drop-shadow(0 12px 22px rgba(44, 109, 157, 0.18));
+}
+
+/* 左邊柯南 */
+.edge-left {
+  left: 4px;
+  background-position: left bottom;
+}
+
+/* 右邊怪盜基德 */
+.edge-right {
+  right: 4px;
+  background-position: right bottom;
 }
 
 .page-shell {
@@ -483,6 +503,16 @@ footer {
 }
 
 /* 平板版 */
+@media (max-width: 1100px) {
+  .edge-figure {
+    width: 170px;
+    height: 330px;
+    bottom: 34px;
+    background-size: 980px auto;
+    opacity: 0.95;
+  }
+}
+
 @media (max-width: 920px) {
   .summary-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -495,6 +525,24 @@ footer {
 }
 
 /* 手機版 */
+@media (max-width: 768px) {
+  .edge-figure {
+    width: 120px;
+    height: 240px;
+    bottom: 24px;
+    background-size: 760px auto;
+    opacity: 0.90;
+  }
+
+  .edge-left {
+    left: -4px;
+  }
+
+  .edge-right {
+    right: -4px;
+  }
+}
+
 @media (max-width: 640px) {
   body {
     background:
@@ -507,15 +555,11 @@ footer {
       url("bg-conan-kid.png"),
       linear-gradient(160deg, #ecf9ff 0%, #bfe7fb 42%, #eaf8ff 100%);
 
-    /*
-      手機版需要稍微放大，不然人物會太小
-      但不會影響你的卡片與表格版型
-    */
     background-size:
       cover,
       cover,
       cover,
-      135% auto,
+      140% auto,
       cover;
 
     background-position:
