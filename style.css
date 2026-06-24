@@ -107,6 +107,7 @@ body::before {
   }
 }
 
+/* 漂浮物圖層 */
 .floating-icons {
   position: fixed;
   inset: 0;
@@ -118,29 +119,34 @@ body::before {
 .floating-icons span {
   position: absolute;
   left: var(--x);
-  bottom: -80px;
-  font-size: clamp(22px, 3vw, 42px);
-  opacity: .07;
+  bottom: -90px;
+  font-size: var(--size, 30px);
+  opacity: .16;
+  filter: drop-shadow(0 0 10px rgba(255, 255, 255, .65));
   animation: floatUp var(--duration) linear infinite;
   animation-delay: var(--delay);
 }
 
 @keyframes floatUp {
   0% {
-    transform: translateY(0) rotate(0deg);
+    transform: translateY(0) translateX(0) rotate(0deg);
     opacity: 0;
   }
 
-  12% {
-    opacity: .07;
+  10% {
+    opacity: .12;
   }
 
-  70% {
-    opacity: .05;
+  45% {
+    opacity: .18;
+  }
+
+  75% {
+    opacity: .12;
   }
 
   100% {
-    transform: translateY(-115vh) rotate(28deg);
+    transform: translateY(-115vh) translateX(28px) rotate(32deg);
     opacity: 0;
   }
 }
@@ -508,7 +514,8 @@ footer {
   }
 
   .floating-icons span {
-    opacity: .05;
+    opacity: .12;
+    font-size: calc(var(--size, 30px) * 0.86);
   }
 
   .page-shell {
