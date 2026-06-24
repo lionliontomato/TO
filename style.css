@@ -33,13 +33,17 @@ body {
   overflow-x: hidden;
 
   background:
+    linear-gradient(
+      rgba(255, 255, 255, 0.00),
+      rgba(255, 255, 255, 0.06)
+    ),
     url("bg-desktop-1920x1080.jpg"),
     linear-gradient(160deg, #cde9fb 0%, #8fc8ec 42%, #d2ecfb 100%);
 
-  background-size: cover, cover;
-  background-position: center center, center center;
+  background-size: cover, cover, cover;
+  background-position: center center, center center, center center;
   background-repeat: no-repeat;
-  background-attachment: fixed, fixed;
+  background-attachment: fixed, fixed, fixed;
 }
 
 /* 淡淡格線 */
@@ -63,7 +67,7 @@ body::before {
   left: -18vw;
   top: -20vw;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.08);
   filter: blur(4px);
   pointer-events: none;
   z-index: 0;
@@ -77,19 +81,19 @@ body::before {
   border-radius: 50%;
   pointer-events: none;
   filter: blur(10px);
-  opacity: .08;
+  opacity: .10;
   animation: drift 18s ease-in-out infinite alternate;
   z-index: 0;
 }
 
 .mist-a {
   top: 220px;
-  background: radial-gradient(ellipse, rgba(255,255,255,.12), transparent 68%);
+  background: radial-gradient(ellipse, rgba(255,255,255,.14), transparent 68%);
 }
 
 .mist-b {
   bottom: 60px;
-  background: radial-gradient(ellipse, rgba(189,232,255,.12), transparent 70%);
+  background: radial-gradient(ellipse, rgba(189,232,255,.14), transparent 70%);
   animation-duration: 24s;
 }
 
@@ -103,7 +107,6 @@ body::before {
   }
 }
 
-/* 漂浮物圖層 */
 .floating-icons {
   position: fixed;
   inset: 0;
@@ -115,36 +118,29 @@ body::before {
 .floating-icons span {
   position: absolute;
   left: var(--x);
-  bottom: -70px;
-  font-size: var(--size, 30px);
-  opacity: .24;
-  filter:
-    drop-shadow(0 0 8px rgba(255, 255, 255, .85))
-    drop-shadow(0 0 14px rgba(108, 194, 238, .35));
-  animation: floatUp var(--duration) ease-in-out infinite;
+  bottom: -80px;
+  font-size: clamp(22px, 3vw, 42px);
+  opacity: .07;
+  animation: floatUp var(--duration) linear infinite;
   animation-delay: var(--delay);
 }
 
 @keyframes floatUp {
   0% {
-    transform: translateY(0) translateX(0) rotate(0deg);
+    transform: translateY(0) rotate(0deg);
     opacity: 0;
   }
 
-  8% {
-    opacity: .18;
-  }
-
-  35% {
-    opacity: .28;
+  12% {
+    opacity: .07;
   }
 
   70% {
-    opacity: .22;
+    opacity: .05;
   }
 
   100% {
-    transform: translateY(-120vh) translateX(var(--move, 36px)) rotate(38deg);
+    transform: translateY(-115vh) rotate(28deg);
     opacity: 0;
   }
 }
@@ -494,13 +490,17 @@ footer {
 @media (max-width: 640px) {
   body {
     background:
+      linear-gradient(
+        rgba(255, 255, 255, 0.00),
+        rgba(255, 255, 255, 0.10)
+      ),
       url("bg-mobile-1080x1920.jpg"),
       linear-gradient(160deg, #cde9fb 0%, #8fc8ec 42%, #d2ecfb 100%);
 
-    background-size: cover, cover;
-    background-position: right top, center top;
+    background-size: cover, cover, cover;
+    background-position: center top, right top, center top;
     background-repeat: no-repeat;
-    background-attachment: scroll, scroll;
+    background-attachment: scroll, scroll, scroll;
   }
 
   body::before {
@@ -508,8 +508,7 @@ footer {
   }
 
   .floating-icons span {
-    opacity: .18;
-    font-size: calc(var(--size, 30px) * 0.86);
+    opacity: .05;
   }
 
   .page-shell {
