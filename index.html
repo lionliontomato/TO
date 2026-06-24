@@ -3,14 +3,15 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>歡茄の金庫</title>
-  <meta name="description" content="番茄的歡茄の金庫查詢頁，只呈現 Google 試算表 A～E 欄資料。" />
+  <title>番茄の金庫</title>
+  <meta name="description" content="番茄の金庫查詢頁，只呈現 Google 試算表 A～E 欄資料。" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Sans+TC:wght@500;700;900&family=Noto+Serif+TC:wght@500;700;900&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css?v=20260624f" />
   <link rel="icon" type="image/svg+xml" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="0.9em" font-size="90">🍅</text></svg>' />
 </head>
+
 <body>
   <div class="sky-glow"></div>
   <div class="mist mist-a"></div>
@@ -30,20 +31,28 @@
     <section class="hero panel">
       <div class="seal">番茄</div>
       <p class="eyebrow"></p>
-      <h1 id="siteTitle">番茄的歡茄の金庫</h1>
-      <p id="siteSubtitle" class="subtitle">謝謝尼的瓜單跟存鑽呀。</p>
+
+      <h1 id="siteTitle">番茄の金庫</h1>
+      <p id="siteSubtitle" class="subtitle">多吃番茄身體好。</p>
 
       <div class="search-card" role="search">
-        <label for="searchInput">懶得找就來查看看</label>
+        <label for="searchInput">懶得找就來查查看</label>
+
         <div class="search-row">
-          <input id="searchInput" type="search" autocomplete="off" placeholder="查詢" />
+          <input id="searchInput" type="search" autocomplete="off" placeholder="輸入名字搜尋..." />
           <button id="clearBtn" type="button">顯示全部</button>
         </div>
+
         <p id="resultText" class="result-text">資料載入中…</p>
       </div>
     </section>
 
     <section class="panel content-panel" aria-label="資料查詢結果">
+      <div class="section-head">
+        <h2>資料列表</h2>
+        <p class="source-note">自動連結 Google 試算表資料</p>
+      </div>
+
       <div class="table-wrap">
         <table>
           <thead id="tableHead"></thead>
@@ -55,11 +64,16 @@
 
   <footer class="site-footer">
     <p>☁️ 謝謝大家的支持 ｜ 天空藍的歡茄金庫</p>
-    <p>© 2026 <span id="footerTitle">歡茄の金庫</span>. All Rights Reserved.</p>
-    <p>本網站「歡茄の金庫」之頁面設計、程式架構、資料整理方式與視覺呈現，未經授權不得重製、改作或商業使用。</p>
-    <p><a href="copyright.html">著作權聲明與使用條款</a></p>
+    <p>© 2026 <span id="footerTitle">番茄の金庫</span>. All Rights Reserved.</p>
+    <p>
+      本網站之頁面設計、程式架構、資料整理方式與視覺呈現，皆為原創內容，
+      未經授權不得重製、改作、轉載或作為商業用途。
+    </p>
+    <p>
+      <a href="copyright.html?v=20260624f">著作權聲明與使用條款</a>
+    </p>
   </footer>
 
-  <script src="script.js?v=20260624c"></script>
+  <script src="script.js?v=20260624f"></script>
 </body>
 </html>
