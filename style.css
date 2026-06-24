@@ -37,7 +37,7 @@ body {
       rgba(255, 255, 255, 0.00),
       rgba(255, 255, 255, 0.06)
     ),
-    url("bg-desktop-conan-kid.png"),
+    url("bg-desktop-1920x1080.jpg"),
     linear-gradient(160deg, #cde9fb 0%, #8fc8ec 42%, #d2ecfb 100%);
 
   background-size: cover, cover, cover;
@@ -494,11 +494,11 @@ footer {
         rgba(255, 255, 255, 0.00),
         rgba(255, 255, 255, 0.10)
       ),
-      url("bg-mobile-conan-kid.png"),
+      url("bg-mobile-1080x1920.jpg"),
       linear-gradient(160deg, #cde9fb 0%, #8fc8ec 42%, #d2ecfb 100%);
 
     background-size: cover, cover, cover;
-    background-position: center top, center top, center top;
+    background-position: center top, right top, center top;
     background-repeat: no-repeat;
     background-attachment: scroll, scroll, scroll;
   }
