@@ -1,8 +1,8 @@
+// tomato vault fixed root 20260624c
 const DEFAULT_TITLE = "番茄的歡茄の金庫";
 const DEFAULT_SUBTITLE = "謝謝尼的瓜單跟存鑽呀。";
 const SHEET_ID = "10TBRxSI86Ghbx3rUc2SnTQe7iVNnyJ6ycjNAOuiz74Q";
-// 若未來試算表有指定 gid，可填在這裡；空白代表讀取預設工作表，與原模板邏輯一致。
-const SHEET_GID = "";
+const SHEET_NAME = "外部";
 
 let headers = ["存鑽老闆", "存鑽數量", "存歌數量", "存爆數量", "總數"];
 let records = [];
@@ -21,7 +21,7 @@ function toNumber(value) {
   if (cleaned === "") return 0;
   const number = Number(cleaned);
   if (Number.isFinite(number)) return number;
-  return cleaned;
+  return String(value ?? "").trim();
 }
 
 function escapeHtml(value) {
@@ -33,122 +33,180 @@ function escapeHtml(value) {
     .replace(/'/g, "&#039;");
 }
 
-function cellToText(cell) {
+function cellValue(cell) {
   if (!cell) return "";
-  if (cell.f !== undefined && cell.f !== null) return String(cell.f).trim();
-  if (cell.v !== undefined && cell.v !== null) return String(cell.v).trim();
+  if (cell.f !== undefined && cell.f !== null) return cell.f;
+  if (cell.v !== undefined && cell.v !== null) return cell.v;
   return "";
 }
 
-function getNextValue(row, startIndex) {
-  for (let i = startIndex + 1; i < row.length; i++) {
-    const value = String(row[i] ?? "").trim();
-    if (value) return value;
-  }
-  return "";
+function createGvizUrl({ sheetName, callbackName }) {
+  const url = new URL(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq`);
+  url.searchParams.set("headers", "1");
+  url.searchParams.set("tq", "select *");
+  url.searchParams.set("tqx", `out:json;responseHandler:${callbackName}`);
+  if (sheetName) url.searchParams.set("sheet", sheetName);
+  return url.toString();
 }
 
-function readSiteSettings(rows) {
-  const settings = {};
-  rows.forEach((row) => {
-    row.forEach((cell, index) => {
-      const key = String(cell ?? "").trim();
-      if (key === "網站標題" || key === "網站小標題") {
-        const value = getNextValue(row, index);
-        if (value) settings[key] = value;
-      }
-    });
-  });
-  return settings;
-}
-
-function applySiteSettings(rows) {
-  // 原模板是讀 L/M 欄；這版改成「找到網站標題／網站小標題後，讀右邊第一個值」。
-  // 所以放在 K/L、L/M 或之後微調位置，都能跟著試算表變動。
-  const settings = readSiteSettings(rows);
-  const title = settings["網站標題"] || DEFAULT_TITLE;
-  const subtitle = settings["網站小標題"] || DEFAULT_SUBTITLE;
-
-  const siteTitle = $("#siteTitle");
-  const siteSubtitle = $("#siteSubtitle");
-  if (siteTitle) siteTitle.textContent = title;
-  if (siteSubtitle) siteSubtitle.textContent = subtitle;
-  document.title = title;
-
-  const metaDescription = document.querySelector('meta[name="description"]');
-  if (metaDescription) {
-    metaDescription.setAttribute("content", `${title}查詢頁，只呈現 Google 試算表 A～E 欄資料。`);
-  }
-}
-
-function loadGoogleSheetByJsonp() {
+function loadGvizJsonp(sheetName) {
   return new Promise((resolve, reject) => {
-    const callbackName = `__tomatoSheetCallback_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+    const callbackName = `__tomatoSheetCallback_${Date.now()}_${Math.floor(Math.random() * 100000)}`;
     const script = document.createElement("script");
-    const timeout = window.setTimeout(() => {
-      cleanup();
-      reject(new Error("Google 試算表讀取逾時"));
-    }, 15000);
+    let finished = false;
+
+    window.google = window.google || {};
+    window.google.visualization = window.google.visualization || {};
+    window.google.visualization.Query = window.google.visualization.Query || {};
+    const oldSetResponse = window.google.visualization.Query.setResponse;
 
     function cleanup() {
-      window.clearTimeout(timeout);
+      finished = true;
       delete window[callbackName];
+      if (oldSetResponse) {
+        window.google.visualization.Query.setResponse = oldSetResponse;
+      } else {
+        delete window.google.visualization.Query.setResponse;
+      }
       script.remove();
     }
 
-    window[callbackName] = (response) => {
+    function handleResponse(data) {
+      if (finished) return;
       cleanup();
-      if (!response || response.status === "error") {
-        const message = response?.errors?.map((item) => item.detailed_message || item.message).join("；") || "Google 試算表回傳錯誤";
-        reject(new Error(message));
-        return;
-      }
-      resolve(response.table);
-    };
+      resolve(data);
+    }
 
-    const params = new URLSearchParams({
-      tqx: `out:json;responseHandler:${callbackName}`,
-      tq: "select *",
-      headers: "1",
-    });
-    if (SHEET_GID) params.set("gid", SHEET_GID);
+    window[callbackName] = handleResponse;
+    // 如果 Google 沒有吃到自訂 callback，預設會呼叫 google.visualization.Query.setResponse。
+    window.google.visualization.Query.setResponse = handleResponse;
 
+    script.src = createGvizUrl({ sheetName, callbackName });
+    script.async = true;
     script.onerror = () => {
+      if (finished) return;
       cleanup();
       reject(new Error("無法連線到 Google 試算表"));
     };
-    script.src = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?${params.toString()}`;
+
+    const timeout = window.setTimeout(() => {
+      if (finished) return;
+      cleanup();
+      reject(new Error("Google 試算表回應逾時"));
+    }, 12000);
+
+    const originalResolve = resolve;
+    resolve = (data) => {
+      window.clearTimeout(timeout);
+      originalResolve(data);
+    };
+
     document.head.appendChild(script);
   });
 }
 
+async function fetchSheetTable() {
+  const attempts = [SHEET_NAME, ""];
+  let lastError = null;
+
+  for (const sheetName of attempts) {
+    try {
+      const data = await loadGvizJsonp(sheetName);
+      if (data.status && data.status !== "ok") {
+        throw new Error(data.errors?.[0]?.detailed_message || data.errors?.[0]?.reason || "Google 試算表讀取失敗");
+      }
+      if (!data.table || !Array.isArray(data.table.rows)) {
+        throw new Error("Google 試算表沒有回傳資料表");
+      }
+      return data.table;
+    } catch (error) {
+      lastError = error;
+    }
+  }
+
+  throw lastError || new Error("Google 試算表讀取失敗");
+}
+
+function tableToRows(table) {
+  const columnCount = table.cols?.length || 0;
+  const headerRow = (table.cols || []).map((col) => String(col.label || "").trim());
+  const bodyRows = (table.rows || []).map((row) => {
+    const cells = row.c || [];
+    return Array.from({ length: columnCount }, (_, index) => cellValue(cells[index]));
+  });
+
+  // 有些試算表會把第一列當資料列回傳；這裡保留防呆。
+  const firstBodyRow = bodyRows[0] || [];
+  const firstHeader = normalize(headerRow[0]);
+  const firstBodyCell = normalize(firstBodyRow[0]);
+  if ((!firstHeader || firstHeader.startsWith("col")) && firstBodyCell === "存鑽老闆") {
+    return {
+      headers: firstBodyRow.map((value) => String(value || "").trim()),
+      rows: bodyRows.slice(1),
+      allRows: [firstBodyRow, ...bodyRows.slice(1)],
+    };
+  }
+
+  return {
+    headers: headerRow,
+    rows: bodyRows,
+    allRows: [headerRow, ...bodyRows],
+  };
+}
+
+function findSetting(allRows, labels) {
+  const wanted = labels.map(normalize);
+
+  for (const row of allRows) {
+    for (let index = 0; index < row.length; index++) {
+      const current = normalize(row[index]);
+      if (!wanted.includes(current)) continue;
+
+      // 原模板是「設定名稱在左、設定內容在右」，所以讀取右邊第一個有內容的儲存格。
+      for (let next = index + 1; next < row.length; next++) {
+        const value = String(row[next] ?? "").trim();
+        if (value) return value;
+      }
+    }
+  }
+
+  return "";
+}
+
+function applySiteSettings(allRows) {
+  const title = findSetting(allRows, ["網站標題", "標題", "site title"]) || DEFAULT_TITLE;
+  const subtitle = findSetting(allRows, ["網站小標題", "小標題", "副標題", "site subtitle"]) || DEFAULT_SUBTITLE;
+
+  const siteTitle = $("#siteTitle");
+  const siteSubtitle = $("#siteSubtitle");
+  const footerTitle = $("#footerTitle");
+  const metaDescription = document.querySelector('meta[name="description"]');
+
+  if (siteTitle) siteTitle.textContent = title;
+  if (siteSubtitle) siteSubtitle.textContent = subtitle;
+  if (footerTitle) footerTitle.textContent = title;
+  if (metaDescription) metaDescription.setAttribute("content", `${title}｜${subtitle}`);
+  document.title = title;
+}
+
 async function loadSheetData() {
-  const table = await loadGoogleSheetByJsonp();
-  if (!table || !Array.isArray(table.cols) || !Array.isArray(table.rows)) {
-    throw new Error("試算表格式無法解析");
-  }
+  const table = await fetchSheetTable();
+  const parsed = tableToRows(table);
+  if (!parsed.rows.length) throw new Error("試算表沒有可顯示的資料");
 
-  const allHeaders = table.cols.map((col, index) => String(col.label || `欄位${index + 1}`).trim());
-  const rows = table.rows
-    .map((row) => allHeaders.map((_, index) => cellToText(row.c?.[index])))
-    .filter((row) => row.some((cell) => String(cell).trim() !== ""));
+  applySiteSettings(parsed.allRows);
 
-  if (!allHeaders.length || rows.length < 1) {
-    throw new Error("試算表沒有可顯示的資料");
-  }
-
-  applySiteSettings(rows);
-
-  headers = allHeaders.slice(0, 5).map((h) => String(h || "").trim()).filter(Boolean);
+  headers = parsed.headers.slice(0, 5).map((h) => String(h || "").trim()).filter(Boolean);
   if (headers.length < 5) {
     headers = ["存鑽老闆", "存鑽數量", "存歌數量", "存爆數量", "總數"];
   }
 
-  records = rows
+  records = parsed.rows
     .map((row) => {
       const item = {};
       headers.forEach((header, index) => {
-        item[header] = index === 0 ? String(row[index] ?? "").trim() : toNumber(row[index]);
+        const value = row[index];
+        item[header] = index === 0 ? String(value ?? "").trim() : toNumber(value);
       });
       return item;
     })
@@ -205,7 +263,7 @@ async function init() {
     console.error(error);
     records = [];
     renderTable(records);
-    $("#resultText").textContent = "資料載入失敗：請確認 Google 試算表已開放『知道連結的使用者可檢視』，並重新整理頁面。";
+    $("#resultText").textContent = "資料載入失敗：請確認 Google 試算表已開放『知道連結的使用者可檢視』，或稍後重新整理。";
   }
 
   $("#searchInput").addEventListener("input", filterRecords);
