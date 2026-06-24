@@ -103,49 +103,52 @@ body::before {
   }
 }
 
-/* 漂浮物圖層 */
+/* 漂浮物圖層：左右兩側明顯版 */
 .floating-icons {
   position: fixed;
   inset: 0;
   pointer-events: none;
   overflow: hidden;
-  z-index: 1;
+  z-index: 3;
 }
 
 .floating-icons span {
   position: absolute;
   left: var(--x);
-  bottom: -70px;
-  font-size: var(--size, 30px);
-  opacity: .24;
+  top: var(--top);
+  font-size: var(--size, 36px);
+  opacity: .48;
   filter:
-    drop-shadow(0 0 8px rgba(255, 255, 255, .85))
-    drop-shadow(0 0 14px rgba(108, 194, 238, .35));
-  animation: floatUp var(--duration) ease-in-out infinite;
+    drop-shadow(0 0 8px rgba(255, 255, 255, .95))
+    drop-shadow(0 0 18px rgba(86, 185, 238, .55));
+  animation: sideFloat var(--duration) ease-in-out infinite;
   animation-delay: var(--delay);
 }
 
-@keyframes floatUp {
+@keyframes sideFloat {
   0% {
-    transform: translateY(0) translateX(0) rotate(0deg);
-    opacity: 0;
+    transform: translateY(0) translateX(0) rotate(-8deg);
+    opacity: .24;
   }
 
-  8% {
-    opacity: .18;
+  25% {
+    transform: translateY(-22px) translateX(var(--move, 30px)) rotate(8deg);
+    opacity: .52;
   }
 
-  35% {
-    opacity: .28;
+  50% {
+    transform: translateY(-44px) translateX(calc(var(--move, 30px) * 0.45)) rotate(18deg);
+    opacity: .42;
   }
 
-  70% {
-    opacity: .22;
+  75% {
+    transform: translateY(-22px) translateX(calc(var(--move, 30px) * -0.25)) rotate(4deg);
+    opacity: .48;
   }
 
   100% {
-    transform: translateY(-120vh) translateX(var(--move, 36px)) rotate(38deg);
-    opacity: 0;
+    transform: translateY(0) translateX(0) rotate(-8deg);
+    opacity: .24;
   }
 }
 
@@ -508,8 +511,8 @@ footer {
   }
 
   .floating-icons span {
-    opacity: .18;
-    font-size: calc(var(--size, 30px) * 0.86);
+    opacity: .38;
+    font-size: calc(var(--size, 36px) * 0.82);
   }
 
   .page-shell {
