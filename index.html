@@ -1,47 +1,15 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>番茄の金庫</title>
-  <meta name="description" content="番茄的金庫查詢頁，只呈現 Google 試算表 A～E 欄資料。" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+TC:wght@500;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+TC:wght@400;700;900&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="style.css?v=20260621d" />
-
-  <link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🍅</text></svg>'>
-
-  <style>
-    .site-footer{
-      position:relative;
-      z-index:2;
-      max-width:980px;
-      margin:36px auto 24px;
-      padding:22px 18px;
-      text-align:center;
-      font-family:"Noto Serif TC",serif;
-      color:rgba(62,88,110,.9);
-      font-size:14px;
-      line-height:1.8;
-    }
-
-    .site-footer p{
-      margin:4px 0;
-    }
-
-    .site-footer a{
-      color:rgba(62,88,110,.98);
-      text-decoration:none;
-      border-bottom:1px solid rgba(62,88,110,.35);
-    }
-
-    .site-footer a:hover{
-      opacity:.75;
-    }
-  </style>
+  <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
@@ -49,55 +17,77 @@
   <div class="mist mist-a"></div>
   <div class="mist mist-b"></div>
 
-  <div class="floating-icons" aria-hidden="true">
-    <span style="--x:8%; --delay:0s; --duration:13s;">☁️</span>
-    <span style="--x:18%; --delay:2s; --duration:16s;">🪶</span>
-    <span style="--x:31%; --delay:5s; --duration:18s;">✦</span>
-    <span style="--x:49%; --delay:1s; --duration:14s;">🔍</span>
-    <span style="--x:64%; --delay:4s; --duration:17s;">🕊️</span>
-    <span style="--x:80%; --delay:3s; --duration:15s;">🎀</span>
-    <span style="--x:92%; --delay:6s; --duration:19s;">✧</span>
+  <!-- 漂浮物：星光、雲朵、撲克牌、白鴿、羽毛 -->
+  <div class="floating-icons">
+    <span style="--x: 6%; --duration: 30s; --delay: 0s; --size: 26px;">✦</span>
+    <span style="--x: 13%; --duration: 36s; --delay: 5s; --size: 32px;">☁️</span>
+    <span style="--x: 22%; --duration: 34s; --delay: 9s; --size: 28px;">🂡</span>
+    <span style="--x: 33%; --duration: 40s; --delay: 3s; --size: 22px;">✧</span>
+    <span style="--x: 44%; --duration: 38s; --delay: 11s; --size: 30px;">🕊️</span>
+    <span style="--x: 55%; --duration: 42s; --delay: 6s; --size: 28px;">🂱</span>
+    <span style="--x: 67%; --duration: 35s; --delay: 13s; --size: 22px;">✦</span>
+    <span style="--x: 76%; --duration: 39s; --delay: 4s; --size: 28px;">🪶</span>
+    <span style="--x: 86%; --duration: 37s; --delay: 10s; --size: 30px;">🃁</span>
+    <span style="--x: 94%; --duration: 44s; --delay: 2s; --size: 24px;">✧</span>
   </div>
 
-  <!-- 讓左右人物浮到內容前面 -->
-  <div class="edge-figure edge-left" aria-hidden="true"></div>
-  <div class="edge-figure edge-right" aria-hidden="true"></div>
-
   <main class="page-shell">
-    <section class="hero panel">
+    <section class="panel hero">
       <div class="seal">歡茄</div>
-      <p class="eyebrow"></p>
+
+      <p class="eyebrow">☁️ ✦ ️ ✧</p>
 
       <h1 id="siteTitle">番茄の金庫</h1>
-      <p id="siteSubtitle" class="subtitle">多吃番茄身體好。</p>
 
-      <div class="search-card" role="search">
+      <p id="siteSubtitle" class="subtitle">
+        多吃番茄身體好。
+      </p>
+
+      <div class="search-card">
         <label for="searchInput">懶得找就來查查看</label>
+
         <div class="search-row">
-          <input id="searchInput" type="search" autocomplete="off" placeholder="查詢" />
+          <input
+            type="search"
+            id="searchInput"
+            placeholder="輸入名字搜尋..."
+            autocomplete="off"
+          />
           <button id="clearBtn" type="button">顯示全部</button>
         </div>
+
         <p id="resultText" class="result-text">資料載入中…</p>
       </div>
     </section>
 
-    <section class="panel content-panel" aria-label="存鑽資料查詢結果">
+    <section class="content-panel">
+      <div class="section-head">
+        <h2>資料列表</h2>
+        <p class="source-note">自動連結 Google 試算表資料</p>
+      </div>
+
       <div class="table-wrap">
         <table>
-          <thead id="tableHead"></thead>
+          <thead>
+            <tr id="tableHead"></tr>
+          </thead>
           <tbody id="tableBody"></tbody>
         </table>
       </div>
     </section>
   </main>
 
-  <footer class="site-footer">
+  <footer>
     <p>☁️ 謝謝大家的支持 ｜ 我愛天空藍，天空藍愛我</p>
     <p>© 2026 LionLionTomato. All Rights Reserved.</p>
-    <p>本網站「番茄の金庫」之頁面設計、程式架構、資料整理方式與視覺呈現，未經授權不得重製、改作或商業使用。</p>
-    <p><a href="copyright.html">著作權聲明與使用條款</a></p>
+    <p>
+      本網站「番茄の金庫」之頁面設計、程式架構、資料整理方式與視覺呈現，未經授權不得重製、改作或商業使用。
+    </p>
+    <p>
+      <a href="terms.html">著作權聲明與使用條款</a>
+    </p>
   </footer>
 
-  <script src="script.js?v=20260620c"></script>
+  <script src="script.js"></script>
 </body>
 </html>
