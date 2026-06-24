@@ -1,3 +1,4 @@
+```js
 const SHEET_ID = "10TBRxSI86Ghbx3rUc2SnTQe7iVNnyJ6ycjNAOuiz74Q";
 
 const SHEET_CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv`;
@@ -103,21 +104,29 @@ function applySiteSettings(rows) {
 }
 
 async function loadSheetData() {
-  const response = await fetch(SHEET_CSV_URL, { cache: "no-store" });
+  const url = `${SHEET_CSV_URL}&cacheBust=${Date.now()}`;
+  const response = await fetch(url, { cache: "no-store" });
 
-  if (!response.ok) throw new Error(`HTTP ${response.status}`);
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}`);
+  }
 
   const csvText = await response.text();
-
   const rows = parseCSV(csvText);
 
-  if (rows.length < 2) throw new Error("試算表沒有可顯示的資料");
+  if (rows.length < 2) {
+    throw new Error("試算表沒有可顯示的資料");
+  }
 
   applySiteSettings(rows);
 
-  headers = rows[0].slice(0, 5).map(h => String(h || "").trim()).filter(Boolean);
+  const sheetHeaders = rows[0]
+    .slice(0, 5)
+    .map(h => String(h || "").trim());
 
-  if (headers.length < 5) {
+  if (sheetHeaders.filter(Boolean).length >= 5) {
+    headers = sheetHeaders;
+  } else {
     headers = ["存鑽老闆", "存鑽數量", "存歌數量", "存爆數量", "總數"];
   }
 
@@ -137,20 +146,38 @@ async function loadSheetData() {
 }
 
 function renderTable(items) {
-  $("#tableHead").innerHTML = `
-    <tr>
-      ${headers.map((h, index) => `<th class="${colors[index] || ""}">${escapeHtml(h)}</th>`).join("")}
-    </tr>
-  `;
+  const tableHead = $("#tableHead");
+  const tableBody = $("#tableBody");
 
-  $("#tableBody").innerHTML = items.map(item => `
+  if (!tableHead || !tableBody) return;
+
+  // 重要：index.html 裡的 tableHead 已經是 <tr id="tableHead"></tr>
+  // 所以這裡只能塞 <th>，不能再塞一層 <tr>
+  tableHead.innerHTML = headers
+    .map((h, index) => `<th class="${colors[index] || "col-extra"}">${escapeHtml(h)}</th>`)
+    .join("");
+
+  if (!items.length) {
+    tableBody.innerHTML = `
+      <tr>
+        <td colspan="${headers.length}" class="empty-state">
+          目前沒有符合的資料
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  tableBody.innerHTML = items.map(item => `
     <tr>
       ${headers.map((h, index) => {
+        const rawValue = item[h];
+
         const value = index === 0
-          ? escapeHtml(item[h])
-          : typeof item[h] === "number"
-            ? fmt.format(item[h])
-            : escapeHtml(item[h]);
+          ? escapeHtml(rawValue)
+          : typeof rawValue === "number"
+            ? fmt.format(rawValue)
+            : escapeHtml(rawValue);
 
         return `<td class="${index === 0 ? "name-cell" : ""}">${value}</td>`;
       }).join("")}
@@ -165,11 +192,12 @@ function updateResultText(items, keyword) {
 
   resultText.textContent = keyword
     ? `搜尋「${keyword}」：找到 ${items.length} 筆資料。`
-    : "";
+    : `目前共 ${items.length} 筆資料。`;
 }
 
 function filterRecords() {
-  const keyword = $("#searchInput").value.trim();
+  const searchInput = $("#searchInput");
+  const keyword = searchInput ? searchInput.value.trim() : "";
   const key = normalize(keyword);
 
   const items = !key
@@ -181,8 +209,14 @@ function filterRecords() {
 }
 
 async function init() {
+  const resultText = $("#resultText");
+  const searchInput = $("#searchInput");
+  const clearBtn = $("#clearBtn");
+
   try {
-    $("#resultText").textContent = "資料載入中…";
+    if (resultText) {
+      resultText.textContent = "資料載入中…";
+    }
 
     await loadSheetData();
 
@@ -194,16 +228,23 @@ async function init() {
     records = [];
     renderTable(records);
 
-    $("#resultText").textContent = "資料載入失敗：請確認 Google 試算表已開放『知道連結的使用者可檢視』。";
+    if (resultText) {
+      resultText.textContent = "資料載入失敗：請確認 Google 試算表已開放『知道連結的使用者可檢視』。";
+    }
   }
 
-  $("#searchInput").addEventListener("input", filterRecords);
+  if (searchInput) {
+    searchInput.addEventListener("input", filterRecords);
+  }
 
-  $("#clearBtn").addEventListener("click", () => {
-    $("#searchInput").value = "";
-    filterRecords();
-    $("#searchInput").focus();
-  });
+  if (clearBtn && searchInput) {
+    clearBtn.addEventListener("click", () => {
+      searchInput.value = "";
+      filterRecords();
+      searchInput.focus();
+    });
+  }
 }
 
 document.addEventListener("DOMContentLoaded", init);
+```
