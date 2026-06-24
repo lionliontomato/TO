@@ -1,8 +1,5 @@
-// tomato vault fixed root 20260624c
-const DEFAULT_TITLE = "番茄的歡茄の金庫";
-const DEFAULT_SUBTITLE = "謝謝尼的瓜單跟存鑽呀。";
 const SHEET_ID = "10TBRxSI86Ghbx3rUc2SnTQe7iVNnyJ6ycjNAOuiz74Q";
-const SHEET_NAME = "外部";
+const SHEET_GID = "0";
 
 let headers = ["存鑽老闆", "存鑽數量", "存歌數量", "存爆數量", "總數"];
 let records = [];
@@ -19,9 +16,13 @@ function normalize(text) {
 function toNumber(value) {
   const cleaned = String(value ?? "").replace(/,/g, "").trim();
   if (cleaned === "") return 0;
+
   const number = Number(cleaned);
-  if (Number.isFinite(number)) return number;
-  return String(value ?? "").trim();
+  if (Number.isFinite(number)) {
+    return number;
+  }
+
+  return cleaned;
 }
 
 function escapeHtml(value) {
@@ -33,184 +34,217 @@ function escapeHtml(value) {
     .replace(/'/g, "&#039;");
 }
 
-function cellValue(cell) {
-  if (!cell) return "";
-  if (cell.f !== undefined && cell.f !== null) return cell.f;
-  if (cell.v !== undefined && cell.v !== null) return cell.v;
-  return "";
+function parseCSV(text) {
+  const rows = [];
+  let row = [];
+  let cell = "";
+  let inQuotes = false;
+
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i];
+    const next = text[i + 1];
+
+    if (char === '"' && inQuotes && next === '"') {
+      cell += '"';
+      i++;
+    } else if (char === '"') {
+      inQuotes = !inQuotes;
+    } else if (char === "," && !inQuotes) {
+      row.push(cell);
+      cell = "";
+    } else if ((char === "\n" || char === "\r") && !inQuotes) {
+      if (char === "\r" && next === "\n") i++;
+      row.push(cell);
+      rows.push(row);
+      row = [];
+      cell = "";
+    } else {
+      cell += char;
+    }
+  }
+
+  row.push(cell);
+  rows.push(row);
+  return rows.filter(r => r.some(c => String(c).trim() !== ""));
 }
 
-function createGvizUrl({ sheetName, callbackName }) {
-  const url = new URL(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq`);
-  url.searchParams.set("headers", "1");
-  url.searchParams.set("tq", "select *");
-  url.searchParams.set("tqx", `out:json;responseHandler:${callbackName}`);
-  if (sheetName) url.searchParams.set("sheet", sheetName);
-  return url.toString();
+function gvizTableToRows(table) {
+  if (!table || !Array.isArray(table.rows)) return [];
+
+  const colCount = Math.max(
+    13, // 保留到 M 欄，才能讀取 L/M 欄網站設定
+    Array.isArray(table.cols) ? table.cols.length : 0,
+    ...table.rows.map(row => Array.isArray(row.c) ? row.c.length : 0)
+  );
+
+  return table.rows
+    .map(row => {
+      const cells = Array.isArray(row.c) ? row.c : [];
+      return Array.from({ length: colCount }, (_, index) => {
+        const cell = cells[index];
+        if (!cell) return "";
+        return cell.f ?? cell.v ?? "";
+      });
+    })
+    .filter(row => row.some(cell => String(cell).trim() !== ""));
 }
 
-function loadGvizJsonp(sheetName) {
+function normalizeSettingKey(value) {
+  return String(value ?? "")
+    .replace(/[：:]/g, "")
+    .replace(/\s+/g, "")
+    .trim();
+}
+
+function addSetting(settings, key, value) {
+  const normalizedKey = normalizeSettingKey(key);
+  const normalizedValue = String(value ?? "").trim();
+  if (!normalizedKey || !normalizedValue) return;
+
+  if (normalizedKey.includes("網站標題")) settings["網站標題"] = normalizedValue;
+  if (normalizedKey.includes("網站小標題")) settings["網站小標題"] = normalizedValue;
+}
+
+function applySiteSettings(rows) {
+  const settings = {};
+
+  rows.forEach(row => {
+    const lKey = String(row[11] ?? "").trim();   // L 欄
+    const mValue = String(row[12] ?? "").trim(); // M 欄
+
+    // 原版規則：L 欄放設定名稱，M 欄放設定值
+    addSetting(settings, lKey, mValue);
+
+    // 容錯：若 L 欄寫成「網站標題：歡茄の金庫」也能讀取
+    const lInlineMatch = lKey.match(/^(網站標題|網站小標題)\s*[：:]\s*(.+)$/);
+    if (lInlineMatch) addSetting(settings, lInlineMatch[1], lInlineMatch[2]);
+
+    // 容錯：整列掃描相鄰欄位，避免因試算表前方多一欄造成 L/M 偏移
+    row.forEach((cell, index) => {
+      const current = String(cell ?? "").trim();
+      const next = String(row[index + 1] ?? "").trim();
+      addSetting(settings, current, next);
+
+      const inlineMatch = current.match(/^(網站標題|網站小標題)\s*[：:]\s*(.+)$/);
+      if (inlineMatch) addSetting(settings, inlineMatch[1], inlineMatch[2]);
+    });
+  });
+
+  const title = settings["網站標題"] || "歡茄の金庫";
+  const subtitle = settings["網站小標題"] || "多吃番茄身體好。";
+
+  const siteTitle = $("#siteTitle");
+  const siteSubtitle = $("#siteSubtitle");
+
+  if (siteTitle) siteTitle.textContent = title;
+  if (siteSubtitle) siteSubtitle.textContent = subtitle;
+
+  document.title = title;
+}
+
+function loadRowsByJsonp() {
   return new Promise((resolve, reject) => {
-    const callbackName = `__tomatoSheetCallback_${Date.now()}_${Math.floor(Math.random() * 100000)}`;
+    const callbackName = `__huanqieSheet_${Date.now()}_${Math.floor(Math.random() * 100000)}`;
     const script = document.createElement("script");
-    let finished = false;
-
-    window.google = window.google || {};
-    window.google.visualization = window.google.visualization || {};
-    window.google.visualization.Query = window.google.visualization.Query || {};
-    const oldSetResponse = window.google.visualization.Query.setResponse;
+    const timeout = window.setTimeout(() => {
+      cleanup();
+      reject(new Error("Google 試算表 JSONP 讀取逾時"));
+    }, 15000);
 
     function cleanup() {
-      finished = true;
-      delete window[callbackName];
-      if (oldSetResponse) {
-        window.google.visualization.Query.setResponse = oldSetResponse;
-      } else {
-        delete window.google.visualization.Query.setResponse;
-      }
-      script.remove();
-    }
-
-    function handleResponse(data) {
-      if (finished) return;
-      cleanup();
-      resolve(data);
-    }
-
-    window[callbackName] = handleResponse;
-    // 如果 Google 沒有吃到自訂 callback，預設會呼叫 google.visualization.Query.setResponse。
-    window.google.visualization.Query.setResponse = handleResponse;
-
-    script.src = createGvizUrl({ sheetName, callbackName });
-    script.async = true;
-    script.onerror = () => {
-      if (finished) return;
-      cleanup();
-      reject(new Error("無法連線到 Google 試算表"));
-    };
-
-    const timeout = window.setTimeout(() => {
-      if (finished) return;
-      cleanup();
-      reject(new Error("Google 試算表回應逾時"));
-    }, 12000);
-
-    const originalResolve = resolve;
-    resolve = (data) => {
       window.clearTimeout(timeout);
-      originalResolve(data);
+      delete window[callbackName];
+      if (script.parentNode) script.parentNode.removeChild(script);
+    }
+
+    window[callbackName] = (response) => {
+      cleanup();
+
+      if (!response || response.status === "error") {
+        const message = response?.errors?.[0]?.detailed_message || response?.errors?.[0]?.message || "Google 試算表回傳錯誤";
+        reject(new Error(message));
+        return;
+      }
+
+      const rows = gvizTableToRows(response.table);
+      if (!rows.length) {
+        reject(new Error("試算表沒有可顯示的資料"));
+        return;
+      }
+
+      resolve(rows);
     };
 
-    document.head.appendChild(script);
+    const query = encodeURIComponent("select *");
+    const cacheBust = Date.now();
+
+    // 使用 JSONP，避免瀏覽器 CORS 導致「載入失敗」。headers=0 可保留第一列當表頭，規則比照原版。
+    script.src = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?gid=${SHEET_GID}&headers=0&tq=${query}&tqx=out:json;responseHandler:${callbackName}&_=${cacheBust}`;
+    script.onerror = () => {
+      cleanup();
+      reject(new Error("無法載入 Google 試算表 JSONP"));
+    };
+
+    document.body.appendChild(script);
   });
 }
 
-async function fetchSheetTable() {
-  const attempts = [SHEET_NAME, ""];
+async function loadRowsByCsv() {
+  const cacheBust = Date.now();
+  const urls = [
+    `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?gid=${SHEET_GID}&headers=0&tqx=out:csv&_=${cacheBust}`,
+    `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${SHEET_GID}&_=${cacheBust}`
+  ];
+
   let lastError = null;
 
-  for (const sheetName of attempts) {
+  for (const url of urls) {
     try {
-      const data = await loadGvizJsonp(sheetName);
-      if (data.status && data.status !== "ok") {
-        throw new Error(data.errors?.[0]?.detailed_message || data.errors?.[0]?.reason || "Google 試算表讀取失敗");
-      }
-      if (!data.table || !Array.isArray(data.table.rows)) {
-        throw new Error("Google 試算表沒有回傳資料表");
-      }
-      return data.table;
+      const response = await fetch(url, { cache: "no-store" });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const text = await response.text();
+      const rows = parseCSV(text);
+      if (rows.length) return rows;
     } catch (error) {
       lastError = error;
     }
   }
 
-  throw lastError || new Error("Google 試算表讀取失敗");
+  throw lastError || new Error("CSV 讀取失敗");
 }
 
-function tableToRows(table) {
-  const columnCount = table.cols?.length || 0;
-  const headerRow = (table.cols || []).map((col) => String(col.label || "").trim());
-  const bodyRows = (table.rows || []).map((row) => {
-    const cells = row.c || [];
-    return Array.from({ length: columnCount }, (_, index) => cellValue(cells[index]));
-  });
-
-  // 有些試算表會把第一列當資料列回傳；這裡保留防呆。
-  const firstBodyRow = bodyRows[0] || [];
-  const firstHeader = normalize(headerRow[0]);
-  const firstBodyCell = normalize(firstBodyRow[0]);
-  if ((!firstHeader || firstHeader.startsWith("col")) && firstBodyCell === "存鑽老闆") {
-    return {
-      headers: firstBodyRow.map((value) => String(value || "").trim()),
-      rows: bodyRows.slice(1),
-      allRows: [firstBodyRow, ...bodyRows.slice(1)],
-    };
+async function loadSheetRows() {
+  try {
+    return await loadRowsByJsonp();
+  } catch (jsonpError) {
+    console.warn("JSONP 讀取失敗，改用 CSV 備援。", jsonpError);
+    return await loadRowsByCsv();
   }
-
-  return {
-    headers: headerRow,
-    rows: bodyRows,
-    allRows: [headerRow, ...bodyRows],
-  };
-}
-
-function findSetting(allRows, labels) {
-  const wanted = labels.map(normalize);
-
-  for (const row of allRows) {
-    for (let index = 0; index < row.length; index++) {
-      const current = normalize(row[index]);
-      if (!wanted.includes(current)) continue;
-
-      // 原模板是「設定名稱在左、設定內容在右」，所以讀取右邊第一個有內容的儲存格。
-      for (let next = index + 1; next < row.length; next++) {
-        const value = String(row[next] ?? "").trim();
-        if (value) return value;
-      }
-    }
-  }
-
-  return "";
-}
-
-function applySiteSettings(allRows) {
-  const title = findSetting(allRows, ["網站標題", "標題", "site title"]) || DEFAULT_TITLE;
-  const subtitle = findSetting(allRows, ["網站小標題", "小標題", "副標題", "site subtitle"]) || DEFAULT_SUBTITLE;
-
-  const siteTitle = $("#siteTitle");
-  const siteSubtitle = $("#siteSubtitle");
-  const footerTitle = $("#footerTitle");
-  const metaDescription = document.querySelector('meta[name="description"]');
-
-  if (siteTitle) siteTitle.textContent = title;
-  if (siteSubtitle) siteSubtitle.textContent = subtitle;
-  if (footerTitle) footerTitle.textContent = title;
-  if (metaDescription) metaDescription.setAttribute("content", `${title}｜${subtitle}`);
-  document.title = title;
 }
 
 async function loadSheetData() {
-  const table = await fetchSheetTable();
-  const parsed = tableToRows(table);
-  if (!parsed.rows.length) throw new Error("試算表沒有可顯示的資料");
+  const rows = await loadSheetRows();
 
-  applySiteSettings(parsed.allRows);
+  if (rows.length < 2) throw new Error("試算表沒有可顯示的資料");
 
-  headers = parsed.headers.slice(0, 5).map((h) => String(h || "").trim()).filter(Boolean);
-  if (headers.length < 5) {
+  applySiteSettings(rows);
+
+  headers = rows[0].slice(0, 5).map(h => String(h || "").trim());
+  if (headers.some(header => header === "")) {
     headers = ["存鑽老闆", "存鑽數量", "存歌數量", "存爆數量", "總數"];
   }
 
-  records = parsed.rows
-    .map((row) => {
+  records = rows.slice(1)
+    .map(row => {
       const item = {};
       headers.forEach((header, index) => {
-        const value = row[index];
-        item[header] = index === 0 ? String(value ?? "").trim() : toNumber(value);
+        item[header] = index === 0
+          ? String(row[index] ?? "").trim()
+          : toNumber(row[index]);
       });
       return item;
     })
-    .filter((item) => String(item[headers[0]] || "").trim() !== "");
+    .filter(item => String(item[headers[0]] || "").trim() !== "");
 }
 
 function renderTable(items) {
@@ -221,11 +255,15 @@ function renderTable(items) {
   `;
 
   if (!items.length) {
-    $("#tableBody").innerHTML = `<tr class="empty-row"><td colspan="${headers.length}">目前沒有符合的資料</td></tr>`;
+    $("#tableBody").innerHTML = `
+      <tr>
+        <td colspan="${headers.length}" class="empty-cell">目前沒有符合條件的資料</td>
+      </tr>
+    `;
     return;
   }
 
-  $("#tableBody").innerHTML = items.map((item) => `
+  $("#tableBody").innerHTML = items.map(item => `
     <tr>
       ${headers.map((h, index) => {
         const value = index === 0
@@ -242,13 +280,20 @@ function renderTable(items) {
 function updateResultText(items, keyword) {
   const resultText = $("#resultText");
   if (!resultText) return;
-  resultText.textContent = keyword ? `搜尋「${keyword}」：找到 ${items.length} 筆資料。` : "";
+
+  resultText.textContent = keyword
+    ? `搜尋「${keyword}」：找到 ${items.length} 筆資料。`
+    : "";
 }
 
 function filterRecords() {
   const keyword = $("#searchInput").value.trim();
   const key = normalize(keyword);
-  const items = !key ? records : records.filter((item) => normalize(item[headers[0]]).includes(key));
+
+  const items = !key
+    ? records
+    : records.filter(item => normalize(item[headers[0]]).includes(key));
+
   renderTable(items);
   updateResultText(items, keyword);
 }
@@ -263,7 +308,7 @@ async function init() {
     console.error(error);
     records = [];
     renderTable(records);
-    $("#resultText").textContent = "資料載入失敗：請確認 Google 試算表已開放『知道連結的使用者可檢視』，或稍後重新整理。";
+    $("#resultText").textContent = "資料載入失敗：請確認 Google 試算表已開放『知道連結的使用者可檢視』，並確認第一個工作表有 A～E 欄資料與 L/M 欄網站設定。";
   }
 
   $("#searchInput").addEventListener("input", filterRecords);
