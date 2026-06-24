@@ -7,9 +7,9 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+TC:wght@400;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Sans+TC:wght@500;700;900&family=Noto+Serif+TC:wght@400;700;900&display=swap" rel="stylesheet">
 
-<link rel="stylesheet" href="style.css?v=20260624-layout" />
+  <link rel="stylesheet" href="style.css?v=20260624-fix2" />
 </head>
 
 <body>
@@ -17,8 +17,7 @@
   <div class="mist mist-a"></div>
   <div class="mist mist-b"></div>
 
-  <!-- 漂浮物：星光、雲朵、撲克牌、白鴿、羽毛 -->
-  <div class="floating-icons">
+  <div class="floating-icons" aria-hidden="true">
     <span style="--x: 6%; --duration: 30s; --delay: 0s; --size: 26px;">✦</span>
     <span style="--x: 13%; --duration: 36s; --delay: 5s; --size: 32px;">☁️</span>
     <span style="--x: 22%; --duration: 34s; --delay: 9s; --size: 28px;">🂡</span>
@@ -32,7 +31,19 @@
   </div>
 
   <main class="page-shell">
-    <section class="panel hero">
+    <section class="hero panel">
+      <div class="gufeng-charm" aria-hidden="true">
+        <span class="moon"></span>
+        <span class="cloud cloud-left"></span>
+        <span class="cloud cloud-right"></span>
+        <span class="fan">
+          <span class="rib rib-a"></span>
+          <span class="rib rib-b"></span>
+          <span class="rib rib-c"></span>
+        </span>
+        <span class="tassel"></span>
+      </div>
+
       <div class="seal">歡茄</div>
 
       <p class="eyebrow">☁️ ✦ ️ ✧</p>
@@ -43,7 +54,7 @@
         多吃番茄身體好。
       </p>
 
-      <div class="search-card">
+      <div class="search-card" role="search">
         <label for="searchInput">懶得找就來查查看</label>
 
         <div class="search-row">
@@ -60,7 +71,7 @@
       </div>
     </section>
 
-    <section class="content-panel">
+    <section class="panel content-panel" aria-label="番茄資料查詢結果">
       <div class="table-wrap">
         <table>
           <thead>
@@ -72,7 +83,7 @@
     </section>
   </main>
 
-  <footer>
+  <footer class="site-footer">
     <p>☁️ 謝謝大家的支持 ｜ 我愛天空藍，天空藍愛我</p>
     <p>© 2026 LionLionTomato. All Rights Reserved.</p>
     <p>
@@ -83,6 +94,6 @@
     </p>
   </footer>
 
-  <script src="script.js"></script>
+  <script src="script.js?v=20260624-fix2"></script>
 </body>
 </html>
