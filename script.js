@@ -12,7 +12,6 @@ function normalize(text) {
   return String(text ?? "").trim().toLowerCase();
 }
 
-// 數字會轉成數字；不是數字的內容會保留原文字，例如 ♾️、∞、無上限、VIP
 function toNumber(value) {
   const cleaned = String(value ?? "").replace(/,/g, "").trim();
   if (cleaned === "") return 0;
@@ -72,7 +71,7 @@ function gvizTableToRows(table) {
   if (!table || !Array.isArray(table.rows)) return [];
 
   const colCount = Math.max(
-    13, // 保留到 M 欄，才能讀取 L/M 欄網站設定
+    13,
     Array.isArray(table.cols) ? table.cols.length : 0,
     ...table.rows.map(row => Array.isArray(row.c) ? row.c.length : 0)
   );
@@ -109,17 +108,14 @@ function applySiteSettings(rows) {
   const settings = {};
 
   rows.forEach(row => {
-    const lKey = String(row[11] ?? "").trim();   // L 欄
-    const mValue = String(row[12] ?? "").trim(); // M 欄
+    const lKey = String(row[11] ?? "").trim();
+    const mValue = String(row[12] ?? "").trim();
 
-    // 原版規則：L 欄放設定名稱，M 欄放設定值
     addSetting(settings, lKey, mValue);
 
-    // 容錯：若 L 欄寫成「網站標題：歡茄の金庫」也能讀取
     const lInlineMatch = lKey.match(/^(網站標題|網站小標題)\s*[：:]\s*(.+)$/);
     if (lInlineMatch) addSetting(settings, lInlineMatch[1], lInlineMatch[2]);
 
-    // 容錯：整列掃描相鄰欄位，避免因試算表前方多一欄造成 L/M 偏移
     row.forEach((cell, index) => {
       const current = String(cell ?? "").trim();
       const next = String(row[index + 1] ?? "").trim();
@@ -131,7 +127,7 @@ function applySiteSettings(rows) {
   });
 
   const title = settings["網站標題"] || "歡茄の金庫";
-  const subtitle = settings["網站小標題"] || "多吃番茄身體好。";
+  const subtitle = settings["網站小標題"] || "基德我男神，🎁未滿30不存鑽";
 
   const siteTitle = $("#siteTitle");
   const siteSubtitle = $("#siteSubtitle");
@@ -178,7 +174,6 @@ function loadRowsByJsonp() {
     const query = encodeURIComponent("select *");
     const cacheBust = Date.now();
 
-    // 使用 JSONP，避免瀏覽器 CORS 導致「載入失敗」。headers=0 可保留第一列當表頭，規則比照原版。
     script.src = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?gid=${SHEET_GID}&headers=0&tq=${query}&tqx=out:json;responseHandler:${callbackName}&_=${cacheBust}`;
     script.onerror = () => {
       cleanup();
